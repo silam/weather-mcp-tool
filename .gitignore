@@ -12,15 +12,3 @@
 Lib/*
 Scripts/*
 
-./Lib/
-./Lib
-
-.\mcp-env\Lib
-.\mcp-env\Lib\
-
-
-./mcp-env/Lib/*
-
-./mcp-env/Lib
-
-./mcp-env/Lib/
