@@ -6,6 +6,8 @@ from starlette.requests import Request
 from starlette.routing import Mount, Route
 from mcp.server import Server
 from mcp.server.fastmcp.prompts import base
+from mcp.server.sse import SseServerTransport
+
 
 
 import uvicorn # ASGI web server implementation for Python
@@ -112,7 +114,7 @@ def create_starlette_app(mcp_server: Server, *, debug: bool = False) -> Starlett
     """
 
     async def handle_sse(request: Request) -> None:
-        async with sse.connect_sse(
+        async with SseServerTransport.connect_sse(
             request.scope,
             request.receive,
             request._send, 
@@ -126,7 +128,7 @@ def create_starlette_app(mcp_server: Server, *, debug: bool = False) -> Starlett
         debug=debug,
         routes=[
             Route("/sse", endpoint=handle_sse),
-            Mount("/message/", app=sse.handle_post_message),
+            Mount("/message/", app=SseServerTransport.handle_post_message),
         ]
     )
 
@@ -137,7 +139,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Run MCP SSE based server')
     parser.add_argument('--host', default='0.0.0.0', help='Host to bind to')
-    parser.add_argument('--port', type=int, default=8080, help='Port to listen on')
+    parser.add_argument('--port', type=int, default=8081, help='Port to listen on')
     args = parser.parse_args()
 
     #Bind SSE request handling to MCP server
@@ -145,4 +147,3 @@ if __name__ == "__main__":
 
     uvicorn.run(starlette_app, host=args.host, port=args.port)
 
-    
